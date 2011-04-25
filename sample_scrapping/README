@@ -1,0 +1,78 @@
+== Welcome to scrapping
+
+Scrapping is a technique where we can grab data like images, content, urls etc.
+
+Here is a sample example where we can scrap the data and save it to our local database.
+
+To run this example we need to have all the required ruby gems and also need to install  "mechanize" and  "hpricot" gems which are useful to scrap the content.
+
+In the above "scrapping_file.rb"  we can see authorization. To scrap the data from "http://www.something.com/" we need to login to the site with some credentials.
+
+So i have provided some credentials as
+
+auth = {'email' => 'something@yahoo.com', 'password' => 'password'}
+
+Example 
+
+  @auth = auth
+  @agent = Mechanize.new
+  @agent.user_agent_alias = 'Mac FireFox'
+  #~ @keep_alive_time  = 300
+  @page = @agent.get('http://www.something.com')
+  login_form = @page.forms.first
+  login_form.email= @auth['email']
+  login_form.password = @auth['password']
+  @page = @agent.submit(login_form)
+   user=Mysql.new('localhost','root','root','something_development')
+   
+   
+Here in the above  we are creating a new object  "@agent ". It will acts as an agent to grab the data from the "http://www.something.com".
+
+After grabing i am crating a new user and saving the grabed data in to my local database. So that i can use the grabed data to my current application.
+
+100.times do |i|
+   i =1+ i
+  puts i
+  begin
+  @page = @agent.get("http://www.something.com/te2/idteacher=676338&idresume=#{i}&idemployer=7214&idjob=180657")
+  result_name = (@page/"table[1]/tr[2]/td").inner_text
+  
+  Here in the below we are grabing the employe name from the "http://www.something.com " with the employer id and the job id.
+  And saving that name to our local system.
+  
+ As well as for the clicking the urls we need to use in the above format.
+ 
+ if @page.link_with(:text => /Personal CV/)
+       begin
+            result_cv_val= @agent.click(@page.link_with(:text => /Personal CV/))           
+              FileUtils.mkdir_p "resume/#{@row}"
+              doc = (result_cv_val/"div/iframe").attribute("src").value
+              cv_url = doc
+              if doc.include? ".DOC"
+                 @agent.get(doc).save("resume/#{@row}/#{@row}.DOC")
+                 mycv = "#{@row}.DOC"
+              elsif doc.include? ".PDF"
+                  @agent.get(doc).save("resume/#{@row}/#{@row}.PDF")
+                   mycv = "#{@row}.PDF"
+              else            
+                  mycv = " "  
+                  cv_url = " "              
+                end
+           rescue 
+                 mycv = " "  
+                cv_url = " " 
+             end
+      end
+	  
+To scrap the images or the pdf file we need to use as the below format as creating the folder and saving as doc or the pdf.
+in the abobe way we can scrap the related content we want and can save to our database.
+ 
+We need to just run the .rb file by running the f5 in your keybord.
+
+
+   
+ 
+ 
+
+
+ 
